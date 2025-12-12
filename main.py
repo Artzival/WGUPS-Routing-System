@@ -1,16 +1,21 @@
-# This is a sample Python script.
+#Author: Andrew Wilson
+#Student ID: 012302297
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import csv
 
+#importing the distance table and address list CSV files
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+with open("CSVdata/distance_table_CSV.csv") as distCSV:
+    DistanceCSV = csv.reader(distCSV)
+    DistanceCSV = list(DistanceCSV)
+with open("Csvdata/address_list_CSV.csv") as addrCSV:
+    AddressCSV = csv.reader(addrCSV)
+    AddressCSV = list(AddressCSV)
 
+#TODO: Create hash table
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+#TODO: Create package class
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+#TODO: parse package CSV and load it into package class
+
+#TODO: create truck class
