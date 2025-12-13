@@ -51,7 +51,22 @@ class HashTable:
     def insert(self, key, value):
         #hash key to compute bucket
         bucket = self.hash(key) % len(self.table)
-        self.table[bucket] = HashTableNode(key, value)
+        #search linked list for value. if value exists, update it, if not, append to end of linked list
+        current_item = self.table[bucket]
+        previous_item = None
+        while current_item != None:
+            if key == current_item.key:
+                current_item.value = value
+                return True
+            previous_item = current_item
+            current_item = current_item.next
+        #append to list
+        if self.table[bucket] == None:
+            self.table[bucket] = HashTableNode(key, value)
+        else:
+            previous_item.next = HashTableNode(key, value)
+        return True
+
 
 #remove method
     def remove(self, key):
