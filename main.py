@@ -2,6 +2,7 @@
 #Author: Andrew Wilson
 
 import csv
+from operator import truediv
 
 #importing the distance table and address list CSV files
 
@@ -50,6 +51,28 @@ class HashTable:
     def insert(self, key, value):
         bucket = self.hash(key) % len(self.table)
         self.table[bucket] = HashTableNode(key, value)
+
+#remove method
+    def remove(self, key):
+        #hash the key to compute bucket
+        bucket = self.hash(key) % len(self.table)
+        #search linked list within bucket for key
+        current_item = self.table[bucket]
+        previous_item = None
+        while current_item != None:
+            if current_item.key == key:
+                if previous_item == None:
+                    #if first item is key, remove first item in list
+                    self.table = current_item.next
+                else:
+                    #directs linked list to skip item, effectively removing it
+                    previous_item.next = current_item.next
+                return True
+            previous_item = current_item
+            current_item = current_item.next
+        return False
+
+
 
 #TODO: parse package CSV and load it into package class
 def parsePackages(packageFile):
