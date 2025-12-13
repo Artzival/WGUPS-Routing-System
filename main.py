@@ -49,6 +49,7 @@ class HashTable:
 
 #insert method
     def insert(self, key, value):
+        #hash key to compute bucket
         bucket = self.hash(key) % len(self.table)
         self.table[bucket] = HashTableNode(key, value)
 
@@ -72,9 +73,21 @@ class HashTable:
             current_item = current_item.next
         return False
 
+    #get method - searches for a key and returns associated value
+    def get(self, key):
+        #hashes key to compute bucket
+        bucket = self.hash(key) % len(self.table)
+        #search linked list for key
+        item = self.table[bucket]
+        while item != None:
+            if key == item.key:
+                return item.value
+            item = item.next
+
+        return None
 
 
-#TODO: parse package CSV and load it into package class
+#parses package CSV file and loads it into Package Class
 def parsePackages(packageFile):
     with open(packageFile) as packCSV:
         packageInfo = csv.reader(packCSV)
