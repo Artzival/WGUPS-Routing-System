@@ -2,14 +2,13 @@
 #Author: Andrew Wilson
 
 import csv
-from operator import truediv
 
 #importing the distance table and address list CSV files
 
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
     DistanceCSV = csv.reader(distCSV)
     DistanceCSV = list(DistanceCSV)
-with open("Csvdata/address_list_CSV.csv") as addrCSV:
+with open("CSVdata/address_list_CSV.csv") as addrCSV:
     AddressCSV = csv.reader(addrCSV)
     AddressCSV = list(AddressCSV)
 
@@ -25,8 +24,8 @@ class Package:
         self.status = status
 
         #creating the __str__ method to provide output for package status
-        def __str__(self):
-            return "Package ID" + self.id + "'s status is " + self.status
+    def __str__(self):
+        return f"Package ID {self.ID}'s status is {self.status}. {self.address}, {self.city}, {self.zip}, {self.deadline}, {self.weight}"
 
 #creating class for each node of hash table
 class HashTableNode:
@@ -88,7 +87,7 @@ class HashTable:
             current_item = current_item.next
         return False
 
-    #get method - searches for a key and returns associated value
+    #get method - searches for a key and returns associated value, or None if no value found
     def get(self, key):
         #hashes key to compute bucket
         bucket = self.hash(key) % len(self.table)
@@ -101,12 +100,14 @@ class HashTable:
 
         return None
 
+#creating a hashtable object for the packages
+packageTable = HashTable()
 
 #parses package CSV file and loads it into Package Class
 def parsePackages(packageFile):
     with open(packageFile) as packCSV:
         packageInfo = csv.reader(packCSV)
-        next (packageInfo)
+        next (packageInfo, None)
         for package in packageInfo:
             packID = int(package[0])
             packAddress = package[1]
@@ -121,3 +122,17 @@ class Trucks:
     def __init__(self):
         self.trucks = []
 
+#TODO: find closest address and then shortest distance to next available address
+
+#TODO: simulate delivering packages via trucks using algorithm
+
+#TODO: call trucks to begin delivering
+
+#TODO: create output for user interface
+
+
+testpackage = Package(1, "324 Grimes St", "Fort Bragg", 28307, "5:00 PM", "2 lbs", "At facility")
+print(testpackage)
+
+#loads package csv data:
+parsePackages("CSVdata/packages_CSV.csv")
