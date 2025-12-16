@@ -10,7 +10,9 @@ with open("CSVdata/distance_table_CSV.csv") as distCSV:
     DistanceCSV = list(DistanceCSV)
 with open("CSVdata/address_list_CSV.csv") as addrCSV:
     AddressCSV = csv.reader(addrCSV)
-    AddressCSV = list(AddressCSV)
+    for row in AddressCSV:
+        a = a
+
 
 #creating the class for the packages in the hash table
 class Package:
@@ -113,9 +115,9 @@ def parsePackages(packageFile):
 
 #TODO: create truck class
 class Truck:
-    def __init__(self, location, departure_time, packages):
+    def __init__(self, locationID, departure_time, packages):
         self.speedMPH = 18
-        self.location = location
+        self.locationID = locationID
         self.departure_time = departure_time
         self.packages = packages
         self.distance_travelled = 0
