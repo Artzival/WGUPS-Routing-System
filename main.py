@@ -105,23 +105,36 @@ def parsePackages(packageFile):
             packWeight = package[6]
             packStatus = "At WGU shipment facility"
 
+            #puts csv packages into Package class and then into packageTable
             pack = Package(packID, packAddress, packCity, packZip,packDeadline, packWeight, packStatus)
             packageTable.insert(packID, pack)
 
 
 
 #TODO: create truck class
-class Trucks:
-    def __init__(self):
-        self.trucks = []
+class Truck:
+    def __init__(self, location, departure_time, packages):
         self.speedMPH = 18
+        self.location = location
+        self.departure_time = departure_time
+        self.packages = packages
+        self.distance_travelled = 0
 
+    def load(self, packages):
+        self.packages = packages
 
-#TODO: find closest address and then shortest distance to next available address
+    #TODO: algorithm to find closest address and begin travel
+    def nextAddress(self):
+        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
 
-#TODO: simulate delivering packages via trucks using algorithm
+        return True
+
 
 #TODO: call trucks to begin delivering
+
+truck1 = Truck("At WGU facility", "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
+truck2 = Truck("At WGU facility", "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
+truck3 = Truck("At WGU facility", "10:00 AM", [6,9,25,28,32,37,39,40])
 
 #TODO: create output for user interface
 
