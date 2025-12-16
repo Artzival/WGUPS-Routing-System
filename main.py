@@ -9,9 +9,10 @@ with open("CSVdata/distance_table_CSV.csv") as distCSV:
     DistanceCSV = csv.reader(distCSV)
     DistanceCSV = list(DistanceCSV)
 with open("CSVdata/address_list_CSV.csv") as addrCSV:
-    AddressCSV = csv.reader(addrCSV)
+    addressDict = []
+    AddressCSV = csv.DictReader(addrCSV)
     for row in AddressCSV:
-        a = a
+        addressDict.append(row)
 
 
 #creating the class for the packages in the hash table
