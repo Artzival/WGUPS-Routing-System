@@ -128,11 +128,18 @@ class Truck:
     def load(self, packages):
         self.packages = packages
 
-    #TODO: algorithm to find closest address and begin travel
-    def nextAddress(self):
-        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
+    def listPackages(self):
+        return self.packages
 
-        return True
+    #TODO: algorithm to find closest address and begin travel
+    def nextAddress(self, row_value, column_value):
+        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
+        distance = DistanceCSV[row_value][column_value]
+        if distance is '':
+            distance = DistanceCSV[row_value][column_value]
+        return float(distance)
+
+
 
 
 #TODO: call trucks to begin delivering
@@ -148,3 +155,4 @@ parsePackages("CSVdata/packages_CSV.csv")
 
 print(packageTable.get(1))
 print(addressDict[1])
+truck1.nextAddress(1,0)
