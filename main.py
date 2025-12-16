@@ -32,7 +32,7 @@ class HashTableNode:
     def __init__(self, node_key, node_value):
         self.node_key = node_key
         self.node_value = node_value
-        #self.next = None
+        self.next = None
 
 #creating the class for the chaining hash table
 class HashTable:
@@ -53,18 +53,16 @@ class HashTable:
         #search linked list for value. if value exists, update it, if not, append to end of linked list
         current_item = self.table[bucket]
         previous_item = None
-        while current_item != None:
-            if key == current_item.key:
-                current_item.value = value
+        #search for key in bucket and update
+        for itemkey in current_item:
+            if itemkey == key:
+                itemkey[1] = value
                 return True
-            previous_item = current_item
-            current_item = current_item.next
-        #append to list
-        if self.table[bucket] == None:
-            self.table[bucket] = HashTableNode(key, value)
-        else:
-            previous_item.next = HashTableNode(key, value)
+        #add to end of chain if not in bucket
+        keyvalue = [key, value]
+        current_item.append(keyvalue)
         return True
+
 
 
 #remove method
@@ -74,34 +72,24 @@ class HashTable:
         #search linked list within bucket for key
         current_item = self.table[bucket]
         previous_item = None
-        while current_item != None:
-            if current_item.key == key:
-                if previous_item == None:
-                    #if first item is key, remove first item in list
-                    self.table = current_item.next
-                else:
-                    #directs linked list to skip item, effectively removing it
-                    previous_item.next = current_item.next
-                return True
-            previous_item = current_item
-            current_item = current_item.next
-        return False
+        for key in current_item:
+            current_item.remove(key)
 
     #get method - searches for a key and returns associated value, or None if no value found
     def get(self, key):
         #hashes key to compute bucket
         bucket = self.hash(key) % len(self.table)
         #search linked list for key
-        item = self.table[bucket]
-        while item != None:
-            if key == item.key:
-                return item.value
-            item = item.next
+        current_item = self.table[bucket]
+        #search for key in bucket
+        for itemkey in current_item:
+            if itemkey[0] == key:
+                return itemkey[1]
+        return "Package not found!"
 
-        return None
 
 #creating a hashtable object for the packages
-packageTable = HashTable()
+packageTable = HashTable(40)
 
 #parses package CSV file and loads it into Package Class
 def parsePackages(packageFile):
@@ -117,10 +105,17 @@ def parsePackages(packageFile):
             packWeight = package[6]
             packStatus = "At WGU shipment facility"
 
+            pack = Package(packID, packAddress, packCity, packZip,packDeadline, packWeight, packStatus)
+            packageTable.insert(packID, pack)
+
+
+
 #TODO: create truck class
 class Trucks:
     def __init__(self):
         self.trucks = []
+        self.speedMPH = 18
+
 
 #TODO: find closest address and then shortest distance to next available address
 
@@ -130,9 +125,7 @@ class Trucks:
 
 #TODO: create output for user interface
 
-
-testpackage = Package(1, "324 Grimes St", "Fort Bragg", 28307, "5:00 PM", "2 lbs", "At facility")
-print(testpackage)
-
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
+
+print(packageTable.get(1))
