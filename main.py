@@ -2,7 +2,6 @@
 #Author: Andrew Wilson
 
 import csv
-
 #importing the distance table and address list CSV files
 
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
@@ -14,23 +13,6 @@ with open("CSVdata/address_list_CSV.csv", newline='') as addrCSV:
     for row in AddressCSV:
         key, value = row
         addressDict[int(key)] = value.strip()
-
-
-
-#creating the class for the packages in the hash table
-class Package:
-    def __init__(self, ID, address, city, zip, deadline, weight, status):
-        self.ID = ID
-        self.address = address
-        self.city = city
-        self.zip = zip
-        self.deadline = deadline
-        self.weight = weight
-        self.status = status
-
-        #creating the __str__ method to provide output for package status
-    def __str__(self):
-        return f"Package ID {self.ID}'s status is {self.status}. {self.address}, {self.city}, {self.zip}, {self.deadline}, {self.weight}"
 
 #creating class for each node of hash table
 class HashTableNode:
@@ -93,6 +75,34 @@ class HashTable:
         return "Package not found!"
 
 
+class Package:
+    def __init__(self, ID, address, city, zip, deadline, weight, status):
+        self.ID = ID
+        self.address = address
+        self.city = city
+        self.zip = zip
+        self.deadline = deadline
+        self.weight = weight
+        self.status = status
+
+        #creating the __str__ method to provide output for package status
+    def __str__(self):
+        return f"Package ID {self.ID}'s status is {self.status}. {self.address}, {self.city}, {self.zip}, {self.deadline}, {self.weight}"
+
+    #algorithm to find distance between 2 addresses
+    def distanceBetween(self, row_value, column_value):
+        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
+        distance = DistanceCSV[row_value][column_value]
+        if distance is '':
+            distance = DistanceCSV[row_value][column_value]
+        print(float(distance))
+
+    #class method that returns the delivery address of a package given its unique ID
+    @classmethod
+    def addressGetter(cls, ID):
+        packaddress = packageTable.get(ID)
+        return packaddress.address
+
 #creating a hashtable object for the packages
 packageTable = HashTable(40)
 
@@ -131,22 +141,18 @@ class Truck:
     def listPackages(self):
         return self.packages
 
-    #TODO: algorithm to find closest address and begin travel
-    def nextAddress(self, row_value, column_value):
-        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
-        distance = DistanceCSV[row_value][column_value]
-        if distance is '':
-            distance = DistanceCSV[row_value][column_value]
-        return float(distance)
-
+    #def nextAddress(self):
+        #take as input the current location id
+        # run the distanceBetween for each package in the list
+        #need to convert packages in list to their address
 
 
 
 #TODO: call trucks to begin delivering
 
-truck1 = Truck(addressDict[1], "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
-truck2 = Truck(addressDict[1], "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
-truck3 = Truck(addressDict[1], "10:00 AM", [6,9,25,28,32,37,39,40])
+truck1 = Truck(addressDict[0], "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
+truck2 = Truck(addressDict[0], "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
+truck3 = Truck(addressDict[0], "10:00 AM", [6,9,25,28,32,37,39,40])
 
 #TODO: create output for user interface
 
@@ -154,5 +160,5 @@ truck3 = Truck(addressDict[1], "10:00 AM", [6,9,25,28,32,37,39,40])
 parsePackages("CSVdata/packages_CSV.csv")
 
 print(packageTable.get(1))
-print(addressDict[1])
-truck1.nextAddress(1,0)
+print(addressDict[0])
+Package.addressGetter(5)
