@@ -2,17 +2,17 @@
 #Author: Andrew Wilson
 
 import csv
+###TODO: fix issue where only first address is being parsed into addressDict and possibly Package class also
 
 #importing the distance table and address list CSV files
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
     DistanceCSV = csv.reader(distCSV)
     DistanceCSV = list(DistanceCSV)
-with open("CSVdata/address_list_CSV.csv", newline='') as addrCSV:
-    addressDict = {}
-    AddressCSV = csv.DictReader(addrCSV)
+with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
+    AddressCSV = csv.reader(addrCSV)
+    address_list = []
     for row in AddressCSV:
-        key, value = row
-        addressDict[int(key)] = value.strip()
+        address_list.append(row[1])
 
 #creating class for each node of hash table
 class HashTableNode:
@@ -159,6 +159,7 @@ class Truck:
                 shortestPackage = item
         self.distance_travelled += lowest_dist
         self.packages.remove(shortestPackage)
+        #TODO: add passage of time
 
         #take as input the current location id
         # run the distanceBetween for each package in the list
@@ -178,5 +179,5 @@ truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 parsePackages("CSVdata/packages_CSV.csv")
 
 print(packageTable.get(1))
-print(addressDict[0])
+#print(addressDict[0])
 #truck1.nextAddress()
