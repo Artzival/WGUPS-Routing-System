@@ -92,7 +92,7 @@ class Package:
     def distanceBetween(self, row_value, column_value):
         #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
         distance = DistanceCSV[row_value][column_value]
-        if distance is '':
+        if distance == '':
             distance = DistanceCSV[row_value][column_value]
         print(float(distance))
 
@@ -100,12 +100,10 @@ class Package:
     @classmethod
     def addressGetter(cls, ID):
         packaddress = packageTable.get(ID)
-        location = packaddress.address
-        locID = None
-        for key, value in addressDict.items():
-            if value == location:
-                locID = key
-        return locID
+        location = address_list.index(packageTable.get(ID).address)
+        return location
+
+
 
 #creating a hashtable object for the packages
 packageTable = HashTable(40)
@@ -148,17 +146,25 @@ class Truck:
     def nextAddress(self):
         lowest_dist = 100.0
         shortestPackage = None
+        distance = None
         for item in self.packages:
             #call distanceBetween for locationID and Package.addressGetter(ID)
-            distance = DistanceCSV[self.locationID][int(Package.addressGetter(item))]
-            if distance is '':
-                distance = DistanceCSV[self.locationID][int(Package.addressGetter(item))]
+            distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
+            if distance == '':
+                distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
             distance = float(distance)
             if distance < lowest_dist:
                 lowest_dist = distance
                 shortestPackage = item
         self.distance_travelled += lowest_dist
         self.packages.remove(shortestPackage)
+        print(shortestPackage)
+        print(distance)
+        print(lowest_dist)
+#lowest_distance = 100
+#distance = 2.2
+#if 2.2 is less than 100, which it is, then lowest distance is now 2.2 and the shortest package is package 1
+#then why is it showest the shortest package to be 21 with a distance of 7.2
         #TODO: add passage of time
 
         #take as input the current location id
@@ -167,17 +173,19 @@ class Truck:
 
 
 
-#TODO: call trucks to begin delivering
 
+#creates trucks and loads them with packages
 truck1 = Truck(0, "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
 truck2 = Truck(0, "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
 truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 
+#TODO: call trucks to begin delivering
 #TODO: create output for user interface
 
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
 print(packageTable.get(1))
-#print(addressDict[0])
-#truck1.nextAddress()
+print(Package.addressGetter(1))
+print(truck1.locationID)
+truck1.nextAddress()
