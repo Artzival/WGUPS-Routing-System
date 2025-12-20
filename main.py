@@ -2,7 +2,6 @@
 #Author: Andrew Wilson
 
 import csv
-###TODO: fix issue where only first address is being parsed into addressDict and possibly Package class also
 
 #importing the distance table and address list CSV files
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
@@ -14,6 +13,7 @@ with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
     for row in AddressCSV:
         address_list.append(row[1])
 
+#TODO: Find out if this class is even needed
 #creating class for each node of hash table
 class HashTableNode:
     def __init__(self, node_key, node_value):
@@ -42,15 +42,13 @@ class HashTable:
         previous_item = None
         #search for key in bucket and update
         for itemkey in current_item:
-            if itemkey == key:
+            if itemkey[0] == key:
                 itemkey[1] = value
                 return True
         #add to end of chain if not in bucket
         keyvalue = [key, value]
         current_item.append(keyvalue)
         return True
-
-
 
 #remove method
     def remove(self, key):
@@ -126,9 +124,7 @@ def parsePackages(package_file):
             pack = Package(packID, pack_address, pack_city, pack_zip,pack_deadline, pack_weight, pack_status)
             packageTable.insert(packID, pack)
 
-
-
-#TODO: create truck class
+#truck class
 class Truck:
     def __init__(self, locationID, departure_time, packages):
         self.speedMPH = 18
@@ -150,8 +146,8 @@ class Truck:
         for item in self.packages:
             #call distanceBetween for locationID and Package.addressGetter(ID)
             distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
-            if distance == '':
-                distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
+            #if distance == '':
+                #distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
             distance = float(distance)
             if distance < lowest_dist:
                 lowest_dist = distance
@@ -185,7 +181,13 @@ truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
+
+#updates package #9 address to 410 S. State St., Salt Lake City, UT 84111
+package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility")
+packageTable.insert(9, package9)
+
 print(packageTable.get(1))
 print(Package.addressGetter(1))
 print(truck1.locationID)
 truck1.nextAddress()
+print(packageTable.get(9))
