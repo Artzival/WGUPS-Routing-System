@@ -2,7 +2,7 @@
 #Author: Andrew Wilson
 
 import csv
-from datetime import timedelta, time
+from datetime import timedelta, datetime
 
 #importing the distance table and address list CSV files
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
@@ -161,16 +161,13 @@ class Truck:
             self.distance_travelled += lowest_dist
             #remove package from truck, 'delivering' it
             self.packages.remove(shortestPackage)
+            #calculates time elapsed while delivering packages and saves it to class variable
+            time_passed = timedelta(hours = lowest_dist / self.speedMPH)
+            self.time_elapsed += time_passed
             #reset values to run the while loop again until packages list is empty
             shortestPackage = None
             lowest_dist = 100
             distance = None
-
-#lowest_distance = 100
-#distance = 2.2
-#if 2.2 is less than 100, which it is, then lowest distance is now 2.2 and the shortest package is package 1
-#then why is it showest the shortest package to be 21 with a distance of 7.2
-        #TODO: add passage of time
 
 #creates trucks and loads them with packages
 truck1 = Truck(0, "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
@@ -178,7 +175,7 @@ truck2 = Truck(0, "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
 truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 
 #TODO: call trucks to begin delivering
-current_time = time(8,0,0)
+current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
 #TODO: way for truck3 to begin delivering when the first of the other trucks returns (with time included)
 
 #loads package csv data:
@@ -193,3 +190,4 @@ print(packageTable.get(1))
 print(Package.addressGetter(1))
 print(truck1.locationID)
 truck1.nextAddress()
+print(truck1.time_elapsed)
