@@ -151,8 +151,6 @@ class Truck:
             for item in self.packages:
                 #using the distance chart CSV file, find distance between current location and the address of each package:
                 distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
-                ####if distance == '':
-                ####distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
                 distance = float(distance)
                 #if the current package's distance is less than the previous shortest distance, record it as the shortest instead
                 if distance < lowest_dist:
@@ -163,9 +161,11 @@ class Truck:
             self.distance_travelled += lowest_dist
             #remove package from truck, 'delivering' it
             self.packages.remove(shortestPackage)
-            print(shortestPackage)
-            print(distance)
-            print(lowest_dist)
+            #reset values to run the while loop again until packages list is empty
+            shortestPackage = None
+            lowest_dist = 100
+            distance = None
+
 #lowest_distance = 100
 #distance = 2.2
 #if 2.2 is less than 100, which it is, then lowest distance is now 2.2 and the shortest package is package 1
