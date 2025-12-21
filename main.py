@@ -2,6 +2,7 @@
 #Author: Andrew Wilson
 
 import csv
+from datetime import timedelta, time
 
 #importing the distance table and address list CSV files
 with open("CSVdata/distance_table_CSV.csv") as distCSV:
@@ -13,7 +14,7 @@ with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
     for row in AddressCSV:
         address_list.append(row[1])
 
-#TODO: Find out if this class is even needed
+#TODO: Find out if this class is even needed (probably not)
 #creating class for each node of hash table
 class HashTableNode:
     def __init__(self, node_key, node_value):
@@ -101,7 +102,7 @@ class Package:
         location = address_list.index(packageTable.get(ID).address)
         return location
 
-
+#TODO: create method to manage status of packages
 
 #creating a hashtable object for the packages
 packageTable = HashTable(40)
@@ -132,6 +133,7 @@ class Truck:
         self.departure_time = departure_time
         self.packages = packages
         self.distance_travelled = 0
+        self.time_elapsed = timedelta(hours=0, minutes=0)
 
     def load(self, packages):
         self.packages = packages
@@ -139,36 +141,36 @@ class Truck:
     def listPackages(self):
         return self.packages
 
+#TODO: fix method picking packages that aren't the closest
+#TODO: run and determine which packages don't meet deadline
     def nextAddress(self):
         lowest_dist = 100.0
         shortestPackage = None
         distance = None
-        for item in self.packages:
-            #call distanceBetween for locationID and Package.addressGetter(ID)
-            distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
-            #if distance == '':
-                #distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
-            distance = float(distance)
-            if distance < lowest_dist:
-                lowest_dist = distance
-                shortestPackage = item
-        self.distance_travelled += lowest_dist
-        self.packages.remove(shortestPackage)
-        print(shortestPackage)
-        print(distance)
-        print(lowest_dist)
+        while len(self.packages) > 0:
+            for item in self.packages:
+                #using the distance chart CSV file, find distance between current location and the address of each package:
+                distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
+                ####if distance == '':
+                ####distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
+                distance = float(distance)
+                #if the current package's distance is less than the previous shortest distance, record it as the shortest instead
+                if distance < lowest_dist:
+                    lowest_dist = distance
+                    #keep note of which package is the shortest distance away:
+                    shortestPackage = item
+            #add the distance of this package to the truck's total distance traveled
+            self.distance_travelled += lowest_dist
+            #remove package from truck, 'delivering' it
+            self.packages.remove(shortestPackage)
+            print(shortestPackage)
+            print(distance)
+            print(lowest_dist)
 #lowest_distance = 100
 #distance = 2.2
 #if 2.2 is less than 100, which it is, then lowest distance is now 2.2 and the shortest package is package 1
 #then why is it showest the shortest package to be 21 with a distance of 7.2
         #TODO: add passage of time
-
-        #take as input the current location id
-        # run the distanceBetween for each package in the list
-        #need to convert packages in list to their address
-
-
-
 
 #creates trucks and loads them with packages
 truck1 = Truck(0, "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
@@ -176,18 +178,18 @@ truck2 = Truck(0, "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
 truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 
 #TODO: call trucks to begin delivering
-#TODO: create output for user interface
+current_time = time(8,0,0)
+#TODO: way for truck3 to begin delivering when the first of the other trucks returns (with time included)
 
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
-
 
 #updates package #9 address to 410 S. State St., Salt Lake City, UT 84111
 package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility")
 packageTable.insert(9, package9)
 
+#TODO: create output for user interface
 print(packageTable.get(1))
 print(Package.addressGetter(1))
 print(truck1.locationID)
 truck1.nextAddress()
-print(packageTable.get(9))
