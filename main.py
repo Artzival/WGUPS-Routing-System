@@ -209,8 +209,12 @@ print(packageTable.get(6).status)
 
 #user interface:
 while True:
-    time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
+    time_check = input("Please enter stop to exit or the time you want to check a package's status (format hh:mm):")
+    if time_check == "stop":
+        break
     (hr,mn) = time_check.split(":")
     time_check = timedelta(hours=int(hr), minutes=int(mn))
-    id_input = input("Enter the package ID of the package you'd like to check:")
+    id_input = input("Enter stop to exit or the package ID of the package you'd like to check:")
+    if id_input == "stop":
+        break
     #TODO: create way to find status of package at a given time
