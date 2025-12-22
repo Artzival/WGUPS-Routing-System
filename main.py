@@ -83,9 +83,9 @@ class Package:
         self.weight = weight
         self.status = status
 
-        #creating the __str__ method to provide output for package status
+        #Requirement B: lookup function to return data components of package given its ID:
     def __str__(self):
-        return f"Package ID {self.ID}'s status is {self.status}. {self.address}, {self.city}, {self.zip}, {self.deadline}, {self.weight}"
+        return f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds."
 
     #algorithm to find distance between 2 addresses
     def distanceBetween(self, row_value, column_value):
@@ -141,9 +141,11 @@ class Truck:
     def listPackages(self):
         return self.packages
 
-#TODO: fix method picking packages that aren't the closest
-#TODO: run and determine which packages don't meet deadline
+#TODO: run and determine which packages don't meet deadline!!!
     def nextAddress(self):
+        #updates status of packages in truck to "in transit"
+        for item in self.packages:
+            packageTable.get(item).status = "In transit"
         lowest_dist = 100.0
         shortestPackage = None
         distance = None
@@ -161,6 +163,8 @@ class Truck:
             self.distance_travelled += lowest_dist
             #remove package from truck, 'delivering' it
             self.packages.remove(shortestPackage)
+            #update status to delivered
+            packageTable.get(shortestPackage).status = "Delivered"
             #calculates time elapsed while delivering packages and saves it to class variable
             time_passed = timedelta(hours = lowest_dist / self.speedMPH)
             self.time_elapsed += time_passed
@@ -174,20 +178,30 @@ truck1 = Truck(0, "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
 truck2 = Truck(0, "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
 truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
 
-#TODO: call trucks to begin delivering
 current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
-#TODO: way for truck3 to begin delivering when the first of the other trucks returns (with time included)
+
+#function to show current time
+def printCurrTime():
+    now = current_time.strftime("%H:%M")
+    print(now)
 
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
-#updates package #9 address to 410 S. State St., Salt Lake City, UT 84111
-package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility")
-packageTable.insert(9, package9)
+#calls trucks to deliver!
+truck1.nextAddress()
+truck2.nextAddress()
+current_time += max(truck1.time_elapsed, truck2.time_elapsed)
+#updates package #9 address to 410 S. State St., Salt Lake City, UT 84111 after 10:20 AM
+if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
+    package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility")
+    packageTable.insert(9, package9)
+
 
 #TODO: create output for user interface
-print(packageTable.get(1))
+print(packageTable.get(9))
 print(Package.addressGetter(1))
 print(truck1.locationID)
-truck1.nextAddress()
 print(truck1.time_elapsed)
+printCurrTime()
+print(packageTable.get(6).status)
