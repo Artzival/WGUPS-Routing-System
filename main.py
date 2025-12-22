@@ -74,7 +74,7 @@ class HashTable:
         return "Package not found!"
 
 class Package:
-    def __init__(self, ID, address, city, zip, deadline, weight, status):
+    def __init__(self, ID, address, city, zip, deadline, weight, status, note):
         self.ID = ID
         self.address = address
         self.city = city
@@ -82,18 +82,16 @@ class Package:
         self.deadline = deadline
         self.weight = weight
         self.status = status
+        #ensuring notes aren't empty for cleaner __str__ output
+        if note == "":
+            self.note = "N/A"
+        else:
+            self.note = note
+        self.delivery_time = "Not delivered yet"
 
         #Requirement B: lookup function to return data components of package given its ID:
     def __str__(self):
-        return f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds."
-
-    #algorithm to find distance between 2 addresses
-    def distanceBetween(self, row_value, column_value):
-        #take current location, then iterate through address of each package in truck, then find whichever is shortest and choose that one
-        distance = DistanceCSV[row_value][column_value]
-        if distance == '':
-            distance = DistanceCSV[row_value][column_value]
-        print(float(distance))
+        return f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}."
 
     #class method that returns the delivery address of a package given its unique ID
     @classmethod
@@ -101,8 +99,6 @@ class Package:
         packaddress = packageTable.get(ID)
         location = address_list.index(packageTable.get(ID).address)
         return location
-
-#TODO: create method to manage status of packages
 
 #creating a hashtable object for the packages
 packageTable = HashTable(40)
@@ -119,10 +115,11 @@ def parsePackages(package_file):
             pack_zip = package[4]
             pack_deadline = package[5]
             pack_weight = package[6]
+            pack_note = package[7]
             pack_status = "At WGU shipment facility"
 
             #puts csv packages into Package class and then into packageTable
-            pack = Package(packID, pack_address, pack_city, pack_zip,pack_deadline, pack_weight, pack_status)
+            pack = Package(packID, pack_address, pack_city, pack_zip,pack_deadline, pack_weight, pack_status, pack_note)
             packageTable.insert(packID, pack)
 
 #truck class
@@ -154,6 +151,11 @@ class Truck:
                 #using the distance chart CSV file, find distance between current location and the address of each package:
                 distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
                 distance = float(distance)
+                #if the current package needs to be delivered by an early deadline, prioritize it
+                if item in [1,6,13,14,15,16,20,25,29,30,31,34,37,40]:
+                    lowest_dist = distance
+                    shortestPackage = item
+                    break
                 #if the current package's distance is less than the previous shortest distance, record it as the shortest instead
                 if distance < lowest_dist:
                     lowest_dist = distance
@@ -194,14 +196,21 @@ truck2.nextAddress()
 current_time += max(truck1.time_elapsed, truck2.time_elapsed)
 #updates package #9 address to 410 S. State St., Salt Lake City, UT 84111 after 10:20 AM
 if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
-    package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility")
+    package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility", "Address corrected")
     packageTable.insert(9, package9)
 
 
-#TODO: create output for user interface
 print(packageTable.get(9))
 print(Package.addressGetter(1))
 print(truck1.locationID)
 print(truck1.time_elapsed)
 printCurrTime()
 print(packageTable.get(6).status)
+
+#user interface:
+while True:
+    time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
+    (hr,mn) = time_check.split(":")
+    time_check = timedelta(hours=int(hr), minutes=int(mn))
+    id_input = input("Enter the package ID of the package you'd like to check:")
+    #TODO: create way to find status of package at a given time
