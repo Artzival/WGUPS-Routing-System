@@ -84,7 +84,13 @@ class Package:
 
         #Requirement B: lookup function to return data components of package given its ID:
     def __str__(self):
-        return f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}."
+        if self.status =="Delivered!":
+            #returns delivery time if package has been delivered already
+            return (
+                f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}. \n"
+                f"Package was delivered at {self.delivery_time.strftime("%H:%M")}")
+        else:
+            return (f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}.")
 
     #method to fing status of package at any given time:
     def statusTime(self, timePassed):
@@ -142,7 +148,6 @@ class Truck:
     def listPackages(self):
         return self.packages
 
-#TODO: run and determine which packages don't meet deadline!!!
     def nextAddress(self):
         #updates status of packages in truck to "in transit"
         for item in self.packages:
@@ -184,9 +189,9 @@ class Truck:
             distance = None
 
 #creates trucks and loads them with packages
-truck1 = Truck(0, datetime(2025,12,21,8,0), [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
-truck2 = Truck(0, datetime(2025,12,21,9,10), [3,6,13,14,15,16,18,19,20,25,29,30,36,37,38,40])
-truck3 = Truck(0, datetime(2025,12,21,12,0), [9,28,31,32,33,34,35,39])
+truck1 = Truck(0, datetime(2025,12,21,8,0), [13,14,15,16,19,20,29,30,31,34,37,40]) #12 packages
+truck2 = Truck(0, datetime(2025,12,21,9,10), [1,3,6,18,25,28,32,33,35,36,38,39]) #12 packages
+truck3 = Truck(0, None, [2,4,5,7,8,9,10,11,12,17,21,22,23,24,26,27]) #16 packages
 
 current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
 
@@ -198,7 +203,6 @@ def printCurrTime():
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
-#TODO: call truck3 to deliver
 #calls trucks to deliver!
 truck1.nextAddress()
 truck2.nextAddress()
@@ -207,6 +211,8 @@ current_time += max(truck1.time_elapsed, truck2.time_elapsed)
 if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
     package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility", "Address corrected")
     packageTable.insert(9, package9)
+truck3.departure_time = current_time + min(truck1.time_elapsed, truck2.time_elapsed)
+truck3.nextAddress()
 
 
 #print(packageTable.get(9))
@@ -215,21 +221,24 @@ if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
 #print(truck1.time_elapsed)
 #printCurrTime()
 #print(packageTable.get(6).status)
+#print(truck3.departure_time)
 
 #user interface:
+print("Enter 'stop' to exit program at any time.")
 while True:
-    time_check = input("Please enter stop to exit or the time you want to check a package's status (format hh:mm):")
+    time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
     if time_check == "stop":
         break
     (hr,mn) = time_check.split(":")
-    time_check = timedelta(hours=int(hr), minutes=int(mn))
-    real_time_check = current_time + time_check
-    id_input = input("Enter stop to exit or the package ID of the package you'd like to check:")
+    time_check = datetime(2025,12,21,hour=int(hr),minute=int(mn))
+    id_input = input("Enter the package ID of the package you'd like to check:")
     if id_input == "stop":
         break
     else:
         id_input = int(id_input)
     package = packageTable.get(id_input)
-    package.statusTime(real_time_check)
+    #seems like this next line isn't executing??
+    package.statusTime(time_check)
+    print(time_check)
     print(str(package))
     print()
