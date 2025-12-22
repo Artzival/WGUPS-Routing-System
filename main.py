@@ -14,14 +14,6 @@ with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
     for row in AddressCSV:
         address_list.append(row[1])
 
-#TODO: Find out if this class is even needed (probably not)
-#creating class for each node of hash table
-class HashTableNode:
-    def __init__(self, node_key, node_value):
-        self.node_key = node_key
-        self.node_value = node_value
-        self.next = None
-
 #creating the class for the chaining hash table
 class HashTable:
     def __init__(self, size):
