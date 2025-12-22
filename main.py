@@ -14,7 +14,7 @@ with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
     for row in AddressCSV:
         address_list.append(row[1])
 
-#creating the class for the chaining hash table
+#creating the class for the chaining hash table that will store the package objects
 class HashTable:
     def __init__(self, size):
         self.size = 40
@@ -53,7 +53,7 @@ class HashTable:
         for key in current_item:
             current_item.remove(key)
 
-    #get method - searches for a key and returns associated value, or None if no value found
+    #get method - searches for a key and returns associated value, or a message if no value found
     def get(self, key):
         #hashes key to compute bucket
         bucket = self.hash(key) % len(self.table)
@@ -65,6 +65,7 @@ class HashTable:
                 return itemkey[1]
         return "Package not found!"
 
+#Package class that stores all package info
 class Package:
     def __init__(self, ID, address, city, zip, deadline, weight, status, note):
         self.ID = ID
@@ -110,7 +111,7 @@ class Package:
         location = address_list.index(packageTable.get(ID).address)
         return location
 
-#creating a hashtable object for the packages
+#creates a hashtable object for the packages
 packageTable = HashTable(40)
 
 #parses package CSV file and loads it into Package Class
@@ -140,14 +141,10 @@ class Truck:
         self.departure_time = departure_time
         self.packages = packages
         self.distance_travelled = 0
+        #the time passed is saved as timedelta so we can add it to the datetime value of the current time
         self.time_elapsed = timedelta(hours=0, minutes=0)
 
-    def load(self, packages):
-        self.packages = packages
-
-    def listPackages(self):
-        return self.packages
-
+    #this is the greedy algorithm that locates the nearest package address and causes the truck to "deliver" it
     def nextAddress(self):
         #updates status of packages in truck to "in transit"
         for item in self.packages:
@@ -213,17 +210,11 @@ if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
     packageTable.insert(9, package9)
 truck3.departure_time = current_time + min(truck1.time_elapsed, truck2.time_elapsed)
 truck3.nextAddress()
-
-
-#print(packageTable.get(9))
-#print(Package.addressGetter(1))
-#print(truck1.locationID)
-#print(truck1.time_elapsed)
-#printCurrTime()
-#print(packageTable.get(6).status)
-#print(truck3.departure_time)
+#calculates the end of the day when the last package has been delivered
+day_end = truck3.time_elapsed + truck3.departure_time
 
 #user interface:
+print(f"The last package was delivered at {day_end.strftime("%H:%M")}.")
 print("Enter 'stop' to exit program at any time.")
 while True:
     time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
@@ -237,7 +228,6 @@ while True:
     else:
         id_input = int(id_input)
     package = packageTable.get(id_input)
-    #seems like this next line isn't executing??
     package.statusTime(time_check)
     print(time_check)
     print(str(package))
