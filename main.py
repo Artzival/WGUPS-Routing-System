@@ -14,6 +14,7 @@ with open("CSVdata/address_list_CSV.csv",mode='r',newline='') as addrCSV:
     for row in AddressCSV:
         address_list.append(row[1])
 
+#Requirement A.
 #creating the class for the chaining hash table that will store the package objects
 class HashTable:
     def __init__(self, size):
@@ -52,6 +53,7 @@ class HashTable:
         previous_item = None
         for key in current_item:
             current_item.remove(key)
+
 
     #get method - searches for a key and returns associated value, or a message if no value found
     def get(self, key):
@@ -213,7 +215,9 @@ truck3.nextAddress()
 #calculates the end of the day when the last package has been delivered
 day_end = truck3.time_elapsed + truck3.departure_time
 
+#Requirement D.
 #user interface:
+#print(f"Total miles travelled: {truck1.distance_travelled + truck2.distance_travelled + truck3.distance_travelled}")
 print(f"The last package was delivered at {day_end.strftime("%H:%M")}.")
 print("Enter 'stop' to exit program at any time.")
 while True:
