@@ -87,11 +87,23 @@ class Package:
             self.note = "N/A"
         else:
             self.note = note
-        self.delivery_time = "Not delivered yet"
+        self.departure_time = None
+        self.delivery_time = None
 
         #Requirement B: lookup function to return data components of package given its ID:
     def __str__(self):
         return f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}."
+
+    #method to fing status of package at any given time:
+    def statusTime(self, timePassed):
+        if self.delivery_time == None:
+            self.status = "At WGU shipment facility"
+        elif timePassed < self.departure_time:
+            self.status = "At WGU shipment facility"
+        elif timePassed < self.delivery_time:
+            self.status = "In transit"
+        else:
+            self.status = "Delivered!"
 
     #class method that returns the delivery address of a package given its unique ID
     @classmethod
@@ -165,11 +177,15 @@ class Truck:
             self.distance_travelled += lowest_dist
             #remove package from truck, 'delivering' it
             self.packages.remove(shortestPackage)
+            #update package departure time to truck departure time
+            packageTable.get(shortestPackage).departure_time = self.departure_time
             #update status to delivered
             packageTable.get(shortestPackage).status = "Delivered"
             #calculates time elapsed while delivering packages and saves it to class variable
             time_passed = timedelta(hours = lowest_dist / self.speedMPH)
             self.time_elapsed += time_passed
+            # update package delivery time
+            packageTable.get(shortestPackage).delivery_time = self.departure_time + time_passed
             #reset values to run the while loop again until packages list is empty
             shortestPackage = None
             lowest_dist = 100
@@ -190,6 +206,7 @@ def printCurrTime():
 #loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
+#TODO: call truck3 to deliver
 #calls trucks to deliver!
 truck1.nextAddress()
 truck2.nextAddress()
@@ -200,12 +217,12 @@ if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
     packageTable.insert(9, package9)
 
 
-print(packageTable.get(9))
-print(Package.addressGetter(1))
-print(truck1.locationID)
-print(truck1.time_elapsed)
-printCurrTime()
-print(packageTable.get(6).status)
+#print(packageTable.get(9))
+#print(Package.addressGetter(1))
+#print(truck1.locationID)
+#print(truck1.time_elapsed)
+#printCurrTime()
+#print(packageTable.get(6).status)
 
 #user interface:
 while True:
@@ -214,7 +231,13 @@ while True:
         break
     (hr,mn) = time_check.split(":")
     time_check = timedelta(hours=int(hr), minutes=int(mn))
+    real_time_check = current_time + time_check
     id_input = input("Enter stop to exit or the package ID of the package you'd like to check:")
     if id_input == "stop":
         break
-    #TODO: create way to find status of package at a given time
+    else:
+        id_input = int(id_input)
+    package = packageTable.get(id_input)
+    package.statusTime(real_time_check)
+    print(str(package))
+    print()
