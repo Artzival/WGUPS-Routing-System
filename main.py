@@ -174,9 +174,9 @@ class Truck:
             distance = None
 
 #creates trucks and loads them with packages
-truck1 = Truck(0, "8:00 AM", [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
-truck2 = Truck(0, "8:00 AM", [3,13,14,15,16,18,19,20,29,30,31,33,34,35,36,38])
-truck3 = Truck(0, "10:00 AM", [6,9,25,28,32,37,39,40])
+truck1 = Truck(0, datetime(2025,12,21,8,0), [1,2,4,5,7,8,10,11,12,17,21,22,23,24,26,27])
+truck2 = Truck(0, datetime(2025,12,21,9,10), [3,6,13,14,15,16,18,19,20,25,29,30,36,37,38,40])
+truck3 = Truck(0, datetime(2025,12,21,12,0), [9,28,31,32,33,34,35,39])
 
 current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
 
