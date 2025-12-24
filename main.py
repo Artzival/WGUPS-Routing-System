@@ -106,7 +106,7 @@ class Package:
         else:
             self.status = "Delivered!"
 
-    # class method that returns the delivery address of a package given its unique ID
+    # class method that returns the delivery address ID number of a package given its unique ID
     @classmethod
     def addressGetter(cls, ID):
         packaddress = packageTable.get(ID)
@@ -146,7 +146,6 @@ class Truck:
         # the time passed is saved as timedelta so we can add it to the datetime value of the current time
         self.time_elapsed = timedelta(hours=0, minutes=0)
 
-#TODO: GET THE TOTAL MILES BELOW 140!!!!!
     # this is the greedy algorithm that locates the nearest package address and causes the truck to "deliver" it
     def nextAddress(self):
         # updates status of packages in truck to "in transit"
@@ -159,9 +158,11 @@ class Truck:
             for item in self.packages:
                 # using the distance chart CSV file, find distance between current location and the address of each package:
                 distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
+                if distance == '':
+                    distance = DistanceCSV[self.locationID][Package.addressGetter(item)]
                 distance = float(distance)
                 # if the current package needs to be delivered by an early deadline, prioritize it
-                priority_packages = [1,6,13,14,15,16,20,25,29,30,31,34,37,40]
+                priority_packages = [6,14,15,16,20,25,29,30,31,34,37,40]
                 # creates an intersection of the truck's packages and the priority packages so that the truck can iterate through specifically the priority packages
                 intersection_list = list(set(self.packages) & set(priority_packages))
                 if item in priority_packages:
@@ -177,6 +178,8 @@ class Truck:
                     shortestPackage = item
             # add the distance of this package to the truck's total distance traveled
             self.distance_travelled += lowest_dist
+            #update truck location to package location
+            self.locationID = Package.addressGetter(shortestPackage)
             # remove package from truck, 'delivering' it
             self.packages.remove(shortestPackage)
             # update package departure time to truck departure time
@@ -194,9 +197,12 @@ class Truck:
             distance = None
 
 # creates trucks and loads them with packages
-truck1 = Truck(0, datetime(2025,12,21,8,0), [13,14,15,16,19,20,29,30,31,34,37,40]) #12 packages
-truck2 = Truck(0, datetime(2025,12,21,9,10), [1,3,6,18,25,28,32,33,35,36,38,39]) #12 packages
-truck3 = Truck(0, None, [2,4,5,7,8,9,10,11,12,17,21,22,23,24,26,27]) #16 packages
+#truck1 = Truck(0, datetime(2025,12,21,8,0), [13,14,15,16,19,20,29,30,31,34,37,40]) #12 packages
+#truck2 = Truck(0, datetime(2025,12,21,9,10), [1,3,6,18,25,28,32,33,35,36,38,39]) #12 packages
+#truck3 = Truck(0, None, [2,4,5,7,8,9,10,11,12,17,21,22,23,24,26,27]) #16 packages
+truck1 = Truck(0, datetime(2025,12,21,8,0), [1,13,14,15,16,19,20,27,29,30,31,34,37,40]) #14 package
+truck2 = Truck(0, datetime(2025,12,21,9,10), [2,3,4,5,6,9,18,25,26,28,32,35,36,38]) #14 package
+truck3 = Truck(0, None, [7,8,10,11,12,17,21,22,23,24,33,39]) #12 package
 
 current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
 
@@ -227,16 +233,16 @@ print(f"Total miles travelled: {truck1.distance_travelled + truck2.distance_trav
 print(f"The last package was delivered at {day_end.strftime("%H:%M")}.")
 print("Enter 'stop' to exit program at any time.")
 while True:
-    time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
-    if time_check == "stop":
-        break
-    (hr,mn) = time_check.split(":")
-    time_check = datetime(2025,12,21,hour=int(hr),minute=int(mn))
     id_input = input("Enter the package ID of the package you'd like to check:")
     if id_input == "stop":
         break
     else:
         id_input = int(id_input)
+    time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
+    if time_check == "stop":
+        break
+    (hr, mn) = time_check.split(":")
+    time_check = datetime(2025, 12, 21, hour=int(hr), minute=int(mn))
     package = packageTable.get(id_input)
     package.statusTime(time_check)
     print(str(package))
