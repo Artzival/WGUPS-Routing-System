@@ -77,6 +77,7 @@ class Package:
         self.deadline = deadline
         self.weight = weight
         self.status = status
+        self.truck = None
         # ensuring notes aren't empty for cleaner __str__ output
         if note == "":
             self.note = "N/A"
@@ -92,8 +93,11 @@ class Package:
             return (
                 f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}. \n"
                 f"Package was delivered at {self.delivery_time.strftime("%H:%M")}")
-        else:
+        elif self.status == "At WGU shipment facility":
             return (f"Package ID {self.ID}'s status is {self.status}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}.")
+        else:
+            #separate message to show what truck the package is on if in transit:
+            return (f"Package ID {self.ID}'s status is {self.status} on {self.truck}. Delivery address is {self.address}, {self.city}, {self.zip}, by {self.deadline}. Weight is {self.weight} pounds. The package note is: {self.note}.")
 
     # method to fing status of package at any given time:
     def statusTime(self, timePassed):
@@ -214,6 +218,18 @@ def printCurrTime():
 # loads package csv data:
 parsePackages("CSVdata/packages_CSV.csv")
 
+#assigns truck to package objects
+packNum = 1
+while packNum < 41:
+    pack = packageTable.get(packNum)
+    if pack in truck1.packages:
+        pack.truck = "truck 1"
+    elif pack in truck2.packages:
+        pack.truck = "truck 2"
+    else:
+        pack.truck = "truck 3"
+    packNum += 1
+
 # calls trucks to deliver!
 truck1.nextAddress()
 truck2.nextAddress()
@@ -233,17 +249,16 @@ print(f"Total miles travelled: {truck1.distance_travelled + truck2.distance_trav
 print(f"The last package was delivered at {day_end.strftime("%H:%M")}.")
 print("Enter 'stop' to exit program at any time.")
 while True:
-    id_input = input("Enter the package ID of the package you'd like to check:")
-    if id_input == "stop":
-        break
-    else:
-        id_input = int(id_input)
     time_check = input("Please enter the time you want to check a package's status (format hh:mm):")
     if time_check == "stop":
         break
-    (hr, mn) = time_check.split(":")
-    time_check = datetime(2025, 12, 21, hour=int(hr), minute=int(mn))
-    package = packageTable.get(id_input)
-    package.statusTime(time_check)
-    print(str(package))
+    else:
+        (hr, mn) = time_check.split(":")
+        time_check = datetime(2025, 12, 21, hour=int(hr), minute=int(mn))
+    count = 1
+    while count < 41:
+        package = packageTable.get(count)
+        package.statusTime(time_check)
+        print(str(package))
+        count += 1
     print()
