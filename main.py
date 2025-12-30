@@ -160,10 +160,14 @@ class Truck:
         distance = None
         while len(self.packages) > 0:
             for item in self.packages:
-                # using the distance chart CSV file, find distance between current location and the address of each package:
+                # using the distance chart CSV file, find distance between current location and the address of each package
                 distance = DistanceCSV[Package.addressGetter(item)][self.locationID]
                 if distance == '':
                     distance = DistanceCSV[self.locationID][Package.addressGetter(item)]
+                if item == 9:
+                    distance = DistanceCSV[19][self.locationID]
+                if distance == '' and item == 9:
+                    distance = DistanceCSV[self.locationID][19]
                 distance = float(distance)
                 # if the current package needs to be delivered by an early deadline, prioritize it
                 priority_packages = [6,14,15,16,20,25,29,30,31,34,37,40]
@@ -205,8 +209,8 @@ class Truck:
 #truck2 = Truck(0, datetime(2025,12,21,9,10), [1,3,6,18,25,28,32,33,35,36,38,39]) #12 packages
 #truck3 = Truck(0, None, [2,4,5,7,8,9,10,11,12,17,21,22,23,24,26,27]) #16 packages
 truck1 = Truck(0, datetime(2025,12,21,8,0), [1,13,14,15,16,19,20,27,29,30,31,34,37,40]) #14 package
-truck2 = Truck(0, datetime(2025,12,21,9,10), [2,3,4,5,6,9,18,25,26,28,32,35,36,38]) #14 package
-truck3 = Truck(0, None, [7,8,10,11,12,17,21,22,23,24,33,39]) #12 package
+truck2 = Truck(0, datetime(2025,12,21,9,10), [2,3,4,5,6,18,25,26,28,32,35,36,38]) #14 package
+truck3 = Truck(0, None, [7,8,9,10,11,12,17,21,22,23,24,33,39]) #12 package
 
 current_time = datetime(year=2025,month=12,day=21,hour=8, minute=0)
 
@@ -235,9 +239,9 @@ truck1.nextAddress()
 truck2.nextAddress()
 current_time += max(truck1.time_elapsed, truck2.time_elapsed)
 # updates package #9 address to 410 S. State St., Salt Lake City, UT 84111 after 10:20 AM
-if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
-    package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility", "Address corrected")
-    packageTable.insert(9, package9)
+#if current_time >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
+#    package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility", "Address corrected")
+#    packageTable.insert(9, package9)
 truck3.departure_time = current_time + min(truck1.time_elapsed, truck2.time_elapsed)
 truck3.nextAddress()
 # calculates the end of the day when the last package has been delivered
@@ -258,6 +262,15 @@ while True:
     count = 1
     while count < 41:
         package = packageTable.get(count)
+        #updates package 9 to return correct address depending on time
+        if package.ID == 9:
+            if time_check >= datetime(year=2025, month=12, day=21, hour=10, minute=20):
+                package9 = Package(9, "410 S State St", "Salt Lake City", 84111, "EOD", 2, "At WGU shipment facility",
+                                   "Address corrected")
+                packageTable.insert(9, package9)
+                package = packageTable.get(count)
+            else:
+                package9 = Package(9,"300 State St", "Salt Lake City", 84103, "EOD", 2, "At WGU shipment facility", "Wrong address listed")
         package.statusTime(time_check)
         print(str(package))
         count += 1
